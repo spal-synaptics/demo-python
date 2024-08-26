@@ -115,6 +115,7 @@ def get_inf_model(model: Optional[str]) -> str:
         try:
             if not model:
                 model: str = input("Model file path: ")
+            print("Validating model...")
             # fmt: off
             subprocess.run(
                 [
@@ -126,6 +127,7 @@ def get_inf_model(model: Optional[str]) -> str:
                 capture_output=True
             )
             # fmt: on
+            print("Model OK")
             return model
         except subprocess.CalledProcessError as e:
             print("\n" + e.stderr.decode())
