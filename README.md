@@ -5,14 +5,14 @@ This project uses Python3.10 to demo inference on a video input on the Synaptics
 
 ## Running demo
 There are two ways to run this demo. 
-#### Clone repository and run `__main__.py`
+#### 1. Clone repository and run `__main__.py`
 This method is recommended if you wish to:
-1. Extend the functionality of the demo by modifying its components.
-2. Customize the demo to suit a specific use-case.
+- Extend the functionality of the demo by modifying its components, or
+- Customize the demo to suit a specific use-case.
 
 Note that `git` isn't yet natively supported on the SL1680 firmware, so this approach involves cloning the repo to a separate machine and then transferring over to the board with `adb push` or `scp`.
 
-#### Directly run `demo-python.pyz`
+#### 2. Directly run `demo-python.pyz`
 Copy `demo-python.pyz` to the board and run with `python3 demo-python.pyz`. This is an easier approach and recommended for users who don't wish to modify the demo itself.
 
 ### Run options
