@@ -1,0 +1,53 @@
+# .github/workflows/create-pyz-release.yml
+name: Create .pyz Release
+
+on:
+  push:
+    branches:
+      - main  # Trigger on commits or merges to the main branch
+  pull_request:
+    types: [closed]  # Trigger when a PR is merged
+    branches:
+      - main
+
+# Add concurrency control to cancel older workflow runs if a new push happens
+concurrency:
+  group: create-pyz-release
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # checkout repository
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # create .pyz file using zipapp
+      - name: Package project with zipapp
+        run: |
+          python -m zipapp . -o demo-python.pyz  # Package the project as a .pyz file
+
+      # create new release
+      - name: Create GitHub release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.sha }}  # Use the commit SHA as the tag name
+          release_name: Release ${{ github.sha }}
+          draft: false
+          prerelease: false
+
+      # upload .pyz file as release asset
+      - name: Upload .pyz file
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./demo-python.pyz
+          asset_name: demo-python.pyz
+          asset_content_type: application/zip
