@@ -112,7 +112,7 @@ class GstPipelineGenerator:
                 "mode=detector",
                 f"model={self._inf_model}",
                 f"frameinterval={self._inf_skip}",
-                f"startdelay={self._inf_delay}",
+                # f"startdelay={self._inf_delay}", # temporarily disabled for compatibility
                 "name=infer",
             ],
             "overlay.inference_sink",
@@ -122,7 +122,6 @@ class GstPipelineGenerator:
                 "synapoverlay",
                 "name=overlay",
                 "label=/usr/share/synap/models/object_detection/coco/info.json",
-                "infername=infer",
             ],
             "videoconvert",
             "waylandsink",
