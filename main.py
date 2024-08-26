@@ -4,7 +4,6 @@ Run a GStreamer demo.
 Requires a valid input source (video / camera / RTSP) and SyNAP inference model.
 """
 
-
 from typing import Any
 import argparse
 import os
@@ -77,7 +76,10 @@ def main(args: argparse.Namespace) -> None:
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description=__doc__, epilog="NOTE: The script will interactively ask for necessary info if not provided via command line.")
+    parser = argparse.ArgumentParser(
+        description=__doc__,
+        epilog="NOTE: The script will interactively ask for necessary info not provided via command line.",
+    )
     parser.add_argument(
         "-t",
         "--inp_type",

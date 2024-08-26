@@ -9,7 +9,7 @@ __all__ = [
     "get_int_prop",
     "get_inp_type",
     "get_inp_src_info",
-    "get_inf_model"
+    "get_inf_model",
 ]
 
 CODECS: dict[str, tuple[str, str]] = {

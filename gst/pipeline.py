@@ -36,7 +36,10 @@ class GstPipeline:
         self._pipeline.clear()
 
     def run(
-        self, run_prompt: str = "Running pipeline...", print_err: bool = True, run_env: Optional[dict[str, str]] = None
+        self,
+        run_prompt: str = "Running pipeline...",
+        print_err: bool = True,
+        run_env: Optional[dict[str, str]] = None,
     ) -> bool:
         self._format_pipeline()
         process = None
@@ -46,7 +49,7 @@ class GstPipeline:
                 ["gst-launch-1.0", *self._pipeline],
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
-                env=run_env
+                env=run_env,
             )
             stdout, stderr = process.communicate()
             if process.returncode != 0:
