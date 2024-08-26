@@ -2,13 +2,15 @@
 name: Create .pyz Release
 
 on:
-  push:
-    branches:
-      - main  # Trigger on commits or merges to the main branch
-  pull_request:
-    types: [closed]  # Trigger when a PR is merged
-    branches:
-      - main
+  workflow_dispatch:  # manual trigger only
+
+  # push:
+  #   branches:
+  #     - main  # Trigger on commits or merges to the main branch
+  # pull_request:
+  #   types: [closed]  # Trigger when a PR is merged
+  #   branches:
+  #     - main
 
 # Add concurrency control to cancel older workflow runs if a new push happens
 concurrency:
@@ -27,7 +29,7 @@ jobs:
       # create .pyz file using zipapp
       - name: Package project with zipapp
         run: |
-          python -m zipapp . -o demo-python.pyz  # Package the project as a .pyz file
+          python -m zipapp . -o demo-python.pyz
 
       # create new release
       - name: Create GitHub release
