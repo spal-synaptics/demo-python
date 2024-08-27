@@ -104,7 +104,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--fullscreen",
         action="store_true",
-        default=False,
+        default=None,
         help="Launch demo in fullscreen"
     )
 
