@@ -10,7 +10,7 @@ import os
 import sys
 
 from gst.pipeline import GstPipelineGenerator
-from utils.input import *
+from utils.user_input import *
 from utils.model_info import *
 
 
@@ -104,7 +104,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--fullscreen",
         action="store_true",
-        default=None,
+        default=False,
         help="Launch demo in fullscreen"
     )
 
