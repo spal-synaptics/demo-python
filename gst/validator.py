@@ -6,7 +6,7 @@ from gst.pipeline import GstPipeline
 class GstInputValidator:
 
     def __init__(
-        self, inp_type: int, num_buffers: int = 10, verbose: bool = False
+        self, inp_type: int, num_buffers: int = 10, verbose: int = 1
     ) -> None:
         self._inp_type = inp_type
         self._num_buffers = num_buffers
@@ -47,8 +47,10 @@ class GstInputValidator:
         self._val_pipeline.add_elements(
             ["fakesink", f"num-buffers={self._num_buffers}"]
         )
-        if not self._val_pipeline.run("Validating input...", self._verbose):
-            print("\n" + msg_on_error + "\n")
+        if not self._val_pipeline.run("Validating input..." if self._verbose > 0 else "", self._verbose > 1):
+            if self._verbose > 0:
+                print("\n" + msg_on_error + "\n")
             return False
-        print("Input OK")
+        if self._verbose > 0:
+            print("Input OK")
         return True

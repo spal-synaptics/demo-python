@@ -2,6 +2,7 @@ from typing import Optional
 import subprocess
 
 from gst.validator import GstInputValidator
+from utils.camera import find_valid_camera_devices
 
 
 __all__ = [
@@ -91,7 +92,16 @@ def get_inp_src_info(
             )
         elif inp_type == 2 and inp_w and inp_h:
             inp_codec = None
-            inp_src: str = inp_src or input("Camera device: ")
+            inp_src: str = inp_src or input("Camera device (default: CAM): ") or "CAM"
+            if inp_src == "CAM":
+                print("Finding valid camera device...")
+                valid_devs = find_valid_camera_devices()
+                if not valid_devs:
+                    print("\nNo camera connected to board\n")
+                    return None
+                inp_src = valid_devs[0]
+                print(f"Found {inp_src}")
+                return inp_src, inp_codec, codec_elems
             msg_on_error: str = (
                 f'ERROR: Invalid camera "{inp_src}", use `v4l2-ctl --list-devices` to verify device'
             )

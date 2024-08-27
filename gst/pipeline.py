@@ -44,7 +44,8 @@ class GstPipeline:
         self._format_pipeline()
         process = None
         try:
-            print(run_prompt)
+            if run_prompt:
+                print(run_prompt)
             process = subprocess.Popen(
                 ["gst-launch-1.0", *self._pipeline],
                 stdout=subprocess.PIPE,
