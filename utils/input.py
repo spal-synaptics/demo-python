@@ -6,6 +6,7 @@ from gst.validator import GstInputValidator
 
 __all__ = [
     "get_dims",
+    "get_bool_prop",
     "get_int_prop",
     "get_inp_type",
     "get_inp_src_info",
@@ -32,6 +33,17 @@ def get_dims(prompt: str, inp_dims: Optional[str]) -> tuple[int, int]:
         except (ValueError, TypeError):
             print(f'\nInvalid dimensions "{inp_dims}"\n')
             inp_dims = None
+
+
+def get_bool_prop(prompt: str) -> bool:
+    while True:
+        try:
+            val = input(f"{prompt} (Y/n): ").lower()
+            if val not in ("y", "n"):
+                raise ValueError
+            return val == "y"
+        except (TypeError, ValueError):
+            print(f"\nInvalid input\n")
 
 
 def get_int_prop(prompt: str, prop_val: Optional[int], default: int) -> int:

@@ -51,6 +51,7 @@ def main(args: argparse.Namespace) -> None:
             args.inf_delay if (args.inf_model and args.inf_dims) else None,
             0,
         )
+        gst_params["fullscreen"] = args.fullscreen if args.fullscreen is not None else get_bool_prop("Launch demo in fullscreen?")
     except KeyboardInterrupt:
         print("\nExiting...")
         sys.exit()
@@ -69,6 +70,7 @@ def main(args: argparse.Namespace) -> None:
         gst_params["inf_h"],
         gst_params["inf_skip"],
         gst_params["inf_delay"],
+        gst_params["fullscreen"],
     )
 
     gen.make_pipeline(gst_params)
@@ -106,6 +108,12 @@ if __name__ == "__main__":
         type=str,
         default="h264",
         help="Input codec for file/RTSP (default: %(default)s)",
+    )
+    parser.add_argument(
+        "--fullscreen",
+        action="store_true",
+        default=None,
+        help="Launch demo in fullscreen"
     )
 
     inf_group = parser.add_argument_group("Inference parameters")

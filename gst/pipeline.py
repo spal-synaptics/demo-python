@@ -84,6 +84,7 @@ class GstPipelineGenerator:
         inf_h: int,
         inf_skip: int,
         inf_delay: int,
+        fullscreen: bool,
     ) -> None:
         self._inp_w = inp_w
         self._inp_h = inp_h
@@ -92,6 +93,7 @@ class GstPipelineGenerator:
         self._inf_h = inf_h
         self._inf_skip = inf_skip
         self._inf_delay = inf_delay
+        self._fullscreen = fullscreen
         self._pipeline: GstPipeline = GstPipeline()
 
     @property
@@ -124,7 +126,7 @@ class GstPipelineGenerator:
                 "label=/usr/share/synap/models/object_detection/coco/info.json",
             ],
             "videoconvert",
-            "waylandsink",
+            ["waylandsink", f"fullscreen={str(self._fullscreen).lower()}"],
         ]
 
     def make_file_pipeline(self, video_file: str, codec_elems: tuple[str, str]) -> None:
