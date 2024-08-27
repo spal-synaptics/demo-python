@@ -11,6 +11,7 @@ import sys
 
 from gst.pipeline import GstPipelineGenerator
 from utils.input import *
+from utils.model_info import *
 
 
 def main(args: argparse.Namespace) -> None:
@@ -38,17 +39,15 @@ def main(args: argparse.Namespace) -> None:
         )
 
         gst_params["inf_model"] = get_inf_model(args.inf_model)
-        gst_params["inf_w"], gst_params["inf_h"] = get_dims(
-            "Model input dimensions", args.inf_dims
-        )
+        gst_params["inf_w"], gst_params["inf_h"] = get_model_input_dims(gst_params["inf_model"])
         gst_params["inf_skip"] = get_int_prop(
             "How many frames to skip between each inference",
-            args.inf_skip if (args.inf_model and args.inf_dims) else None,
+            args.inf_skip if args.inf_model else None,
             1,
         )
         gst_params["inf_delay"] = get_int_prop(
             "How many frames to delay start of inference by",
-            args.inf_delay if (args.inf_model and args.inf_dims) else None,
+            args.inf_delay if args.inf_model else None,
             0,
         )
         gst_params["fullscreen"] = args.fullscreen if args.fullscreen is not None else get_bool_prop("Launch demo in fullscreen?")
@@ -112,12 +111,6 @@ if __name__ == "__main__":
     inf_group = parser.add_argument_group("Inference parameters")
     inf_group.add_argument(
         "--inf_model", type=str, metavar="FILE", help="SyNAP model file location"
-    )
-    inf_group.add_argument(
-        "--inf_dims",
-        type=str,
-        metavar="WIDTHxHEIGHT",
-        help="Model input dimensions (widthxheight)",
     )
     inf_group.add_argument(
         "--inf_skip",
