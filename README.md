@@ -5,7 +5,7 @@ This project uses Python3.10 to demo inference on a video input on the Synaptics
 
 ## Running demo
 Once you have the repository, there's two ways to run the demo:
-#### 1. Clone repository and run `__main__.py`
+#### 1. Clone repository and run `main.py`
 This method is recommended if you wish to:
 - Extend the functionality of the demo by modifying its components, or
 - Customize the demo to suit a specific use-case.
@@ -16,7 +16,7 @@ curl -L -O https://github.com/spal-synaptics/demo-python/archive/main.zip
 unzip main.zip
 rm main.zip
 ```
-The repository should now be cloned in a folder called `demo-python-main` and you can run the demo with `python3 __main__.py`.
+The repository should now be cloned in a folder called `demo-python-main` and you can run the demo with `python3 main.py`.
 
 #### 2. Directly run `demo-python.pyz`
 Copy and run `demo-python.pyz` on the board:
@@ -27,7 +27,7 @@ python3 demo-python.pyz
 This is a simpler approach recommended for users who don't wish to modify the demo itself.
 
 ### Run options
-The demo can be run without any additional input arguments by doing `python3 demo-python.pyz` or `python3 __main__.py`.
+The demo can be run without any additional input arguments by doing `python3 demo-python.pyz` or `python3 main.py`.
 The script will interactively ask for necessary information such as the video input and inference model details.
 
 
@@ -40,4 +40,4 @@ python3 demo-python.pyz \
 --inf_model <inference model> \
 --inf_dims <model input size>
 ```
-Use `python demo-python.pyz --help` to get a list of available input arguments. The script will ask for any necessary information that is not provided via the input arguments.
+Use `python3 main.py --help` or `python3 demo-python.pyz --help` to get a list of available input arguments. The script will ask for any necessary information that is not provided via the input arguments.
