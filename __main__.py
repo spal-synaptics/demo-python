@@ -63,17 +63,10 @@ def main(args: argparse.Namespace) -> None:
     env["QT_QPA_PLATFORM"] = "wayland"
 
     gen: GstPipelineGenerator = GstPipelineGenerator(
-        gst_params.get("inp_w", None),
-        gst_params.get("inp_h", None),
-        gst_params["inf_model"],
-        gst_params["inf_w"],
-        gst_params["inf_h"],
-        gst_params["inf_skip"],
-        gst_params["inf_delay"],
-        gst_params["fullscreen"],
+        gst_params
     )
 
-    gen.make_pipeline(gst_params)
+    gen.make_pipeline()
     gen.pipeline.run(run_env=env)
 
 

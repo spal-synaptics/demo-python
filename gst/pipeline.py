@@ -77,23 +77,20 @@ class GstPipelineGenerator:
 
     def __init__(
         self,
-        inp_w: Optional[int],
-        inp_h: Optional[int],
-        inf_model: str,
-        inf_w: int,
-        inf_h: int,
-        inf_skip: int,
-        inf_delay: int,
-        fullscreen: bool,
+        gst_params: dict[str, Any],
     ) -> None:
-        self._inp_w = inp_w
-        self._inp_h = inp_h
-        self._inf_model = inf_model
-        self._inf_w = inf_w
-        self._inf_h = inf_h
-        self._inf_skip = inf_skip
-        self._inf_delay = inf_delay
-        self._fullscreen = fullscreen
+        self._inp_type: int = gst_params["inp_type"]
+        self._inp_w: int = gst_params.get("inp_w", None)
+        self._inp_h: int = gst_params.get("inp_h", None)
+        self._inp_src: str = gst_params["inp_src"]
+        self._inp_codec: str = gst_params["inp_codec"]
+        self._codec_elems: tuple[str, str] = gst_params["codec_elems"]
+        self._inf_model: str = gst_params["inf_model"]
+        self._inf_w: int = gst_params["inf_w"]
+        self._inf_h: int = gst_params["inf_h"]
+        self._inf_skip: int = gst_params["inf_skip"]
+        self._inf_delay: int = gst_params["inf_delay"]
+        self._fullscreen: bool = gst_params["fullscreen"]
         self._pipeline: GstPipeline = GstPipeline()
 
     @property
@@ -168,20 +165,19 @@ class GstPipelineGenerator:
             *self._infer_elements(),
         )
 
-    def make_pipeline(self, gst_params: dict[str, Any]) -> None:
+    def make_pipeline(self) -> None:
         try:
-            inp_type: int = gst_params["inp_type"]
-            if inp_type == 1:
+            if self._inp_type == 1:
                 self.make_file_pipeline(
-                    gst_params["inp_src"], gst_params["codec_elems"]
+                    self._inp_src, self._codec_elems
                 )
-            elif inp_type == 2:
-                self.make_cam_pipeline(gst_params["inp_src"])
-            elif inp_type == 3:
+            elif self._inp_type == 2:
+                self.make_cam_pipeline(self._inp_src)
+            elif self._inp_type == 3:
                 self.make_rtsp_pipeline(
-                    gst_params["inp_src"],
-                    gst_params["inp_codec"],
-                    gst_params["codec_elems"],
+                    self._inp_src,
+                    self._inp_codec,
+                    self._codec_elems,
                 )
             else:
                 raise SystemExit("Fatal: invalid code - shouldn't reach here")
