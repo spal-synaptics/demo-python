@@ -84,8 +84,8 @@ class GstPipelineGenerator:
         self._inp_w: int = gst_params.get("inp_w", None)
         self._inp_h: int = gst_params.get("inp_h", None)
         self._inp_src: str = gst_params["inp_src"]
-        self._inp_codec: str = gst_params["inp_codec"]
-        self._codec_elems: tuple[str, str] = gst_params["codec_elems"]
+        self._inp_codec: str = gst_params.get("inp_codec", None)
+        self._codec_elems: tuple[str, str] = gst_params.get("codec_elems", None)
         self._inf_model: str = gst_params["inf_model"]
         self._inf_w: int = gst_params["inf_w"]
         self._inf_h: int = gst_params["inf_h"]
@@ -129,6 +129,10 @@ class GstPipelineGenerator:
 
     def make_file_pipeline(self, video_file: str, codec_elems: tuple[str, str]) -> None:
         self._pipeline.reset()
+        if not codec_elems:
+            raise SystemExit(
+                "Fatal: codec information not provided to pipeline generator"
+            )
         self._pipeline.add_elements(
             ["filesrc", f'location="{video_file}"'],
             ["qtdemux", "name=demux", "demux.video_0"],
@@ -141,7 +145,7 @@ class GstPipelineGenerator:
         self._pipeline.reset()
         if not self._inp_w or not self._inp_h:
             raise SystemExit(
-                "Fatal: input width and height not provided to pipeline generator"
+                "Fatal: input width or height not provided to pipeline generator"
             )
         self._pipeline.add_elements(
             ["v4l2src", f"device={cam_device}"],
@@ -155,7 +159,11 @@ class GstPipelineGenerator:
         self._pipeline.reset()
         if not self._inp_w or not self._inp_h:
             raise SystemExit(
-                "Fatal: input width and height not provided to pipeline generator"
+                "Fatal: input width or height not provided to pipeline generator"
+            )
+        if not inp_codec or not codec_elems:
+            raise SystemExit(
+                "Fatal: codec information not provided to pipeline generator"
             )
         self._pipeline.add_elements(
             ["rtspsrc", f'location="{rtsp_url}"', "latency=2000"],
@@ -169,9 +177,7 @@ class GstPipelineGenerator:
     def make_pipeline(self) -> None:
         try:
             if self._inp_type == 1:
-                self.make_file_pipeline(
-                    self._inp_src, self._codec_elems
-                )
+                self.make_file_pipeline(self._inp_src, self._codec_elems)
             elif self._inp_type == 2:
                 self.make_cam_pipeline(self._inp_src)
             elif self._inp_type == 3:
