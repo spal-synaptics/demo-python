@@ -1,3 +1,7 @@
+# ============================================================================== #
+# IMPORTS: DO NOT MODIFY                                                         #
+# ============================================================================== #
+
 import os
 import sys
 from typing import Any
@@ -5,6 +9,8 @@ from typing import Any
 from gst.pipeline import GstPipelineGenerator
 from utils.model_info import get_model_input_dims
 from utils.user_input import get_inp_src_info
+
+# ============================================================================== #
 
 
 # Your camera's input width.
