@@ -27,16 +27,17 @@ python3 <demo>.pyz
 This is a simpler approach recommended for users who don't wish to modify the demo itself.
 
 ### Run options
-> [!TIP]
-> `.py` and `.pyz` files are interchangeable for this section
 #### Main demo
+> [!TIP]
+> `demo.py` and `demo.pyz` are interchangeable for this section
+
 `demo.py` is a generic demo that can be used for any input source and has several customization options. The demo can be run without any additional input arguments by doing `python3 demo.py`.
 The script will interactively ask for necessary information such as the video input and inference model details.
 
 
 Alternatively, you can run with input arguments:
 ```
-python3 demo-python.pyz \
+python3 demo-python.py \
 -i <input source> \
 -t <input type> \
 -d <input dimensions> \
