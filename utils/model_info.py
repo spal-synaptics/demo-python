@@ -20,12 +20,14 @@ def get_model_input_dims(model: str) -> tuple[int, int]:
                 elif input_info["format"] == "nchw":
                     inp_w, inp_h = input_info["shape"][3], input_info["shape"][2]
                 else:
-                    raise ValueError(f"Invalid metadata: unknown format \"{input_info['format']}\"")
+                    raise ValueError(
+                        f"Invalid metadata: unknown format \"{input_info['format']}\""
+                    )
                 # print(f"Extracted model input size: {inp_w}x{inp_h}")
                 return inp_w, inp_h
     except (zipfile.BadZipFile, FileNotFoundError):
         print(f"\nInvalid SyNAP model: {model}\n")
     except KeyError as e:
-        print(f"\nMissing model metadata \"{e.args[0]}\"\nInvalid SyNAP model: {model}\n")
+        print(f'\nMissing model metadata "{e.args[0]}"\nInvalid SyNAP model: {model}\n')
     except (NotImplementedError, ValueError) as e:
         print(f"\n{e.args[0]}\nInvalid SyNAP model: {model}\n")
