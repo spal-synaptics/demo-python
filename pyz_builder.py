@@ -42,12 +42,13 @@ if __name__ == "__main__":
             for f in Path(".").rglob("*"):
                 if str(f.resolve()) == __file__:
                     continue
+                if cwd / f.parent == cwd / "examples":
+                    continue
                 if f.suffix == ".py":
                     dst = td / f.parent
                     dst.mkdir(parents=True, exist_ok=True)
-                    if f.name == target:
-                        copy2(f, td / "__main__.py")
-                    else:
-                        copy2(f, dst)
-            zipapp.create_archive(td, f"exec/{Path(target).stem}.pyz")
+                    copy2(f, dst)
+            target_src: Path = cwd / target if target == "demo.py" else cwd / "examples" / target
+            copy2(target_src, td / "__main__.py")
+            zipapp.create_archive(td, f"{cwd}/exec/{Path(target).stem}.pyz")
             print(f"Built .pyz for {target}")
