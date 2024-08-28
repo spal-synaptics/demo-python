@@ -1,10 +1,11 @@
+from typing import Optional
 import json
 import zipfile
 
 META_FILE = "0/model.json"
 
 
-def get_model_input_dims(model: str) -> tuple[int, int]:
+def get_model_input_dims(model: str) -> Optional[tuple[int, int]]:
     try:
         with zipfile.ZipFile(model, "r") as mod_info:
             if META_FILE not in mod_info.namelist():
