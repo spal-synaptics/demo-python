@@ -46,4 +46,4 @@ Use `python3 demo.py --help` to get a list of available input arguments. The scr
 
 #### Specific examples
 The [examples](examples) folder contains input-specific demos. These are less customizable but easier to run, and can serve as quickstart demos to test out an input source or AI model.
-The default parameters for an example can be directly modified in its Python script, or overridden via input arguments similar to `demo.py`. To run an example do `python3 <example>.py`. 
+The default parameters for an example can be directly modified in its Python script, or overridden via input arguments similar to `demo.py`. To run an example do `python3 -m examples.<example>` from the project's root directory, or `python3 <example>.pyz` if you only have the executable. 
