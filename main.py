@@ -39,7 +39,9 @@ def main(args: argparse.Namespace) -> None:
         )
 
         gst_params["inf_model"] = get_inf_model(args.inf_model)
-        gst_params["inf_w"], gst_params["inf_h"] = get_model_input_dims(gst_params["inf_model"])
+        gst_params["inf_w"], gst_params["inf_h"] = get_model_input_dims(
+            gst_params["inf_model"]
+        )
         gst_params["inf_skip"] = get_int_prop(
             "How many frames to skip between each inference",
             args.inf_skip if args.inf_model else None,
@@ -50,7 +52,11 @@ def main(args: argparse.Namespace) -> None:
             args.inf_delay if args.inf_model else None,
             0,
         )
-        gst_params["fullscreen"] = args.fullscreen if args.fullscreen is not None else get_bool_prop("Launch demo in fullscreen?")
+        gst_params["fullscreen"] = (
+            args.fullscreen
+            if args.fullscreen is not None
+            else get_bool_prop("Launch demo in fullscreen?")
+        )
     except KeyboardInterrupt:
         print("\nExiting...")
         sys.exit()
@@ -61,9 +67,7 @@ def main(args: argparse.Namespace) -> None:
     env["WAYLAND_DISPLAY"] = "wayland-1"
     env["QT_QPA_PLATFORM"] = "wayland"
 
-    gen: GstPipelineGenerator = GstPipelineGenerator(
-        gst_params
-    )
+    gen: GstPipelineGenerator = GstPipelineGenerator(gst_params)
 
     gen.make_pipeline()
     gen.pipeline.run(run_env=env)
@@ -105,7 +109,7 @@ if __name__ == "__main__":
         "--fullscreen",
         action="store_true",
         default=None,
-        help="Launch demo in fullscreen"
+        help="Launch demo in fullscreen",
     )
 
     inf_group = parser.add_argument_group("Inference parameters")
