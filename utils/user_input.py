@@ -1,3 +1,4 @@
+from argparse import ArgumentTypeError
 from typing import Optional
 import subprocess
 
@@ -12,6 +13,7 @@ __all__ = [
     "get_inp_type",
     "get_inp_src_info",
     "get_inf_model",
+    "validate_inp_dims"
 ]
 
 CODECS: dict[str, tuple[str, str]] = {
@@ -155,3 +157,15 @@ def get_inf_model(model: Optional[str]) -> str:
             print("\n" + e.stderr.decode())
             print(f'\nERROR: Invalid SyNAP model "{model}"\n')
             model = None
+
+
+def validate_inp_dims(dims: str) -> str:
+    try:
+        width, height = dims.split('x')
+        width: int = int(width)
+        height: int = int(height)
+        if width <= 0 or height <= 0:
+            raise ArgumentTypeError("Both width and height must be positive integers.")
+        return f"{width}x{height}"
+    except ValueError:
+        raise ArgumentTypeError("Input size must be WIDTHxHEIGHT, where both are integers.")
