@@ -92,8 +92,8 @@ def get_inp_src_info(
             )
         elif inp_type == 2 and inp_w and inp_h:
             inp_codec = None
-            inp_src: str = inp_src or input("Camera device (default: CAM): ") or "CAM"
-            if inp_src == "CAM":
+            inp_src: str = inp_src or input("Camera device (default: AUTO): ") or "AUTO"
+            if inp_src == "AUTO":
                 print("Finding valid camera device...")
                 valid_devs = find_valid_camera_devices(inp_w=inp_w, inp_h=inp_h)
                 if not valid_devs:
