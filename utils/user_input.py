@@ -95,7 +95,7 @@ def get_inp_src_info(
             inp_src: str = inp_src or input("Camera device (default: CAM): ") or "CAM"
             if inp_src == "CAM":
                 print("Finding valid camera device...")
-                valid_devs = find_valid_camera_devices()
+                valid_devs = find_valid_camera_devices(inp_w=inp_w, inp_h=inp_h)
                 if not valid_devs:
                     print("\nNo camera connected to board\n")
                     return None
