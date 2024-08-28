@@ -40,8 +40,7 @@ python3 demo-python.pyz \
 -i <input source> \
 -t <input type> \
 -d <input dimensions> \
---inf_model <inference model> \
---inf_dims <model input size>
+--model <inference model>
 ```
 Use `python3 demo.py --help` to get a list of available input arguments. The script will ask for any necessary information that is not provided via the input arguments.
 

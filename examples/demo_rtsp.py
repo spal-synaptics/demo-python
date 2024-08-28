@@ -118,7 +118,7 @@ if __name__ == "__main__":
         "--fullscreen",
         action="store_true",
         default=FULLSCREEN,
-        help="Launch demo in fullscreen (default: %(default)s)",
+        help="Launch demo in fullscreen",
     )
     args = parser.parse_args()
     main()
