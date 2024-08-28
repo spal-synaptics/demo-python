@@ -91,14 +91,14 @@ if __name__ == "__main__":
         type=validate_inp_dims,
         default=f"{INPUT_WIDTH}x{INPUT_HEIGHT}",
         metavar="WIDTHxHEIGHT",
-        help="Camera's input size (widthxheight) (default: %(default)s)"
+        help="RTSP stream's input size (widthxheight) (default: %(default)s)"
     )
     parser.add_argument(
         "-c", "--input_codec",
         type=str,
         default=VIDEO_CODEC,
         metavar="CODEC",
-        help="Video input codec (default: %(default)s)",
+        help="RTSP stream input codec (default: %(default)s)",
     )
     parser.add_argument(
         "-m", "--model",
