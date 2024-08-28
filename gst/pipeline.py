@@ -90,7 +90,6 @@ class GstPipelineGenerator:
         self._inf_w: int = gst_params["inf_w"]
         self._inf_h: int = gst_params["inf_h"]
         self._inf_skip: int = gst_params["inf_skip"]
-        self._inf_delay: int = gst_params["inf_delay"]
         self._fullscreen: bool = gst_params["fullscreen"]
         self._pipeline: GstPipeline = GstPipeline()
 
@@ -112,7 +111,6 @@ class GstPipelineGenerator:
                 "mode=detector",
                 f"model={self._inf_model}",
                 f"frameinterval={self._inf_skip}",
-                # f"startdelay={self._inf_delay}", # temporarily disabled for compatibility
                 "name=infer",
             ],
             "overlay.inference_sink",

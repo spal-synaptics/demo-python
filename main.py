@@ -49,11 +49,6 @@ def main(args: argparse.Namespace) -> None:
             args.inf_skip if args.inf_model else None,
             1,
         )
-        gst_params["inf_delay"] = get_int_prop(
-            "How many frames to delay start of inference by",
-            args.inf_delay if args.inf_model else None,
-            0,
-        )
         gst_params["fullscreen"] = (
             args.fullscreen
             if args.fullscreen is not None
@@ -124,13 +119,6 @@ if __name__ == "__main__":
         metavar="N_FRAMES",
         default=1,
         help="How many frames to skip between each inference (default: %(default)s)",
-    )
-    inf_group.add_argument(
-        "--inf_delay",
-        type=int,
-        metavar="N_FRAMES",
-        default=0,
-        help="How many frames to delay start of inference by (default: %(default)s)",
     )
     args = parser.parse_args()
 
