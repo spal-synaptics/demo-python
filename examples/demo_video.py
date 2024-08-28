@@ -9,7 +9,7 @@ from typing import Any
 
 from gst.pipeline import GstPipelineGenerator
 from utils.model_info import get_model_input_dims
-from utils.user_input import get_inp_src_info, validate_inp_dims
+from utils.user_input import get_inp_src_info, get_inf_model
 
 # ============================================================================== #
 
@@ -42,7 +42,8 @@ def main():
     inp_src_info = get_inp_src_info(1, None, None, args.input, args.input_codec)
     if not inp_src_info:
         sys.exit(1)
-    model_inp_dims = get_model_input_dims(args.model)
+    model = get_inf_model(args.model)
+    model_inp_dims = get_model_input_dims(model)
     if not model_inp_dims:
         sys.exit(1)
     gst_params: dict[str, Any] = {
@@ -50,7 +51,7 @@ def main():
         "inp_src": inp_src_info[0],
         "inp_codec": inp_src_info[1],
         "codec_elems": inp_src_info[2],
-        "inf_model": args.model,
+        "inf_model": model,
         "inf_w": model_inp_dims[0],
         "inf_h": model_inp_dims[1],
         "inf_skip": args.inference_skip,
