@@ -18,10 +18,10 @@ def main(args: argparse.Namespace) -> None:
     gst_params: dict[str, Any] = {}
 
     try:
-        gst_params["inp_type"] = get_inp_type(args.inp_type)
+        gst_params["inp_type"] = get_inp_type(args.input_type)
         if gst_params["inp_type"] != 1:
             gst_params["inp_w"], gst_params["inp_h"] = get_dims(
-                "Input dimensions", args.inp_dims
+                "Input dimensions", args.input_dims
             )
 
         if not (
@@ -29,8 +29,8 @@ def main(args: argparse.Namespace) -> None:
                 gst_params["inp_type"],
                 gst_params.get("inp_w", None),
                 gst_params.get("inp_h", None),
-                args.inp_src,
-                args.inp_codec if args.inp_src else None,
+                args.input,
+                args.input_codec if args.input else None,
             )
         ):
             sys.exit(1)
@@ -38,7 +38,7 @@ def main(args: argparse.Namespace) -> None:
             inp_src_info
         )
 
-        gst_params["inf_model"] = get_inf_model(args.inf_model)
+        gst_params["inf_model"] = get_inf_model(args.model)
         model_inp_dims = get_model_input_dims(
             gst_params["inf_model"]
         )
@@ -47,7 +47,7 @@ def main(args: argparse.Namespace) -> None:
         gst_params["inf_w"], gst_params["inf_h"] = model_inp_dims
         gst_params["inf_skip"] = get_int_prop(
             "How many frames to skip between each inference",
-            args.inf_skip if args.inf_model else None,
+            args.inference_skip if args.model else None,
             1,
         )
         gst_params["fullscreen"] = (
@@ -77,28 +77,29 @@ if __name__ == "__main__":
         epilog="NOTE: The script will interactively ask for necessary info not provided via command line.",
     )
     parser.add_argument(
+        "-i",
+        "--input",
+        type=str,
+        metavar="SRC",
+        help="Input source (file / camera / RTSP)",
+    )
+    parser.add_argument(
         "-t",
-        "--inp_type",
+        "--input_type",
         type=str,
         metavar="TYPE",
         help="Input type ([1] File, [2] Camera, [3] RTSP)",
     )
     parser.add_argument(
         "-d",
-        "--inp_dims",
+        "--input_dims",
         type=str,
         metavar="WIDTHxHEIGHT",
-        help="Input dimensions (widthxheight)",
+        help="Input size (widthxheight)",
     )
     parser.add_argument(
-        "-i",
-        "--inp_src",
-        type=str,
-        metavar="SRC",
-        help="Input source (file / camera / RTSP)",
-    )
-    parser.add_argument(
-        "--inp_codec",
+        "-c",
+        "--input_codec",
         type=str,
         default="h264",
         help="Input codec for file/RTSP (default: %(default)s)",
@@ -112,10 +113,11 @@ if __name__ == "__main__":
 
     inf_group = parser.add_argument_group("Inference parameters")
     inf_group.add_argument(
-        "--inf_model", type=str, metavar="FILE", help="SyNAP model file location"
+        "--model", type=str, metavar="FILE", help="SyNAP model file location"
     )
     inf_group.add_argument(
-        "--inf_skip",
+        "-s",
+        "--inference_skip",
         type=int,
         metavar="N_FRAMES",
         default=1,

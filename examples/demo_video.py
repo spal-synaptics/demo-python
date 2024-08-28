@@ -89,14 +89,14 @@ if __name__ == "__main__":
         type=str,
         default=MODEL,
         metavar="FILE",
-        help="Inference model file (default: %(default)s)"
+        help="SyNAP model file location (default: %(default)s)"
     )
     parser.add_argument(
         "-s", "--inference_skip",
         type=int,
         default=INFERENCE_SKIP,
         metavar="FRAMES",
-        help="How many frames to skip between sucessive inferences (default: %(default)s)"
+        help="How many frames to skip between each inference (default: %(default)s)"
     )
     parser.add_argument(
         "--fullscreen",
