@@ -39,11 +39,12 @@ def main(args: argparse.Namespace) -> None:
         )
 
         gst_params["inf_model"] = get_inf_model(args.inf_model)
-        gst_params["inf_w"], gst_params["inf_h"] = get_model_input_dims(
+        model_inp_dims = get_model_input_dims(
             gst_params["inf_model"]
         )
-        if not gst_params["inf_w"] or not gst_params["inf_h"]:
+        if not model_inp_dims:
             sys.exit(1)
+        gst_params["inf_w"], gst_params["inf_h"] = model_inp_dims
         gst_params["inf_skip"] = get_int_prop(
             "How many frames to skip between each inference",
             args.inf_skip if args.inf_model else None,
