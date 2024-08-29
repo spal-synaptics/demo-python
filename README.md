@@ -5,7 +5,7 @@ This project uses Python3.10 to demo inference on a video input on the Synaptics
 
 ## Running demos
 There's two ways of running the demos:
-#### 1. Clone repository and run `main.py`
+#### 1. Clone repository and run `demo.py`
 This method is recommended if you wish to:
 - Extend the functionality of the demo by modifying its components, or
 - Customize the demo to suit a specific use-case.
