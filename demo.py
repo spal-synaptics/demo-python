@@ -59,16 +59,10 @@ def main(args: argparse.Namespace) -> None:
         print("\nExiting...")
         sys.exit()
 
-    env = os.environ.copy()
-    env["XDG_RUNTIME_DIR"] = "/var/run/user/0"
-    env["WESTON_DISABLE_GBM_MODIFIERS"] = "true"
-    env["WAYLAND_DISPLAY"] = "wayland-1"
-    env["QT_QPA_PLATFORM"] = "wayland"
-
     gen: GstPipelineGenerator = GstPipelineGenerator(gst_params)
 
     gen.make_pipeline()
-    gen.pipeline.run(run_env=env)
+    gen.pipeline.run()
 
 
 if __name__ == "__main__":

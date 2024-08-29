@@ -1,5 +1,15 @@
+from os import environ
 from typing import Any, Optional
 import subprocess
+
+
+def get_env() -> dict[str, str]:
+    env = environ.copy()
+    env["XDG_RUNTIME_DIR"] = "/var/run/user/0"
+    env["WESTON_DISABLE_GBM_MODIFIERS"] = "true"
+    env["WAYLAND_DISPLAY"] = "wayland-1"
+    env["QT_QPA_PLATFORM"] = "wayland"
+    return env
 
 
 class GstPipeline:
@@ -39,7 +49,6 @@ class GstPipeline:
         self,
         run_prompt: str = "Running pipeline...",
         print_err: bool = True,
-        run_env: Optional[dict[str, str]] = None,
     ) -> bool:
         self._format_pipeline()
         process = None
@@ -50,7 +59,7 @@ class GstPipeline:
                 ["gst-launch-1.0", *self._pipeline],
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
-                env=run_env,
+                env=get_env(),
             )
             stdout, stderr = process.communicate()
             if process.returncode != 0:
