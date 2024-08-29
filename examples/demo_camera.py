@@ -3,7 +3,6 @@
 # ============================================================================== #
 
 import argparse
-import os
 import sys
 from typing import Any
 
@@ -41,11 +40,6 @@ FULLSCREEN = False
 # ============================================================================== #
 
 def main():
-    os.environ["XDG_RUNTIME_DIR"] = "/var/run/user/0"
-    os.environ["WESTON_DISABLE_GBM_MODIFIERS"] = "true"
-    os.environ["WAYLAND_DISPLAY"] = "wayland-1"
-    os.environ["QT_QPA_PLATFORM"] = "wayland"
-
     inp_w, inp_h = [int(d) for d in args.input_dims.split("x")]
     inp_src_info = get_inp_src_info(2, inp_w, inp_h, args.input, None)
     if not inp_src_info:

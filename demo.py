@@ -6,7 +6,6 @@ Requires a valid input source (video / camera / RTSP) and SyNAP inference model.
 
 from typing import Any
 import argparse
-import os
 import sys
 
 from gst.pipeline import GstPipelineGenerator
