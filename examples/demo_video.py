@@ -38,24 +38,28 @@ FULLSCREEN = False
 # ============================================================================== #
 
 def main():
-    inp_src_info = get_inp_src_info(1, None, None, args.input, args.input_codec)
-    if not inp_src_info:
-        sys.exit(1)
-    model = get_inf_model(args.model)
-    model_inp_dims = get_model_input_dims(model)
-    if not model_inp_dims:
-        sys.exit(1)
-    gst_params: dict[str, Any] = {
-        "inp_type": 1,
-        "inp_src": inp_src_info[0],
-        "inp_codec": inp_src_info[1],
-        "codec_elems": inp_src_info[2],
-        "inf_model": model,
-        "inf_w": model_inp_dims[0],
-        "inf_h": model_inp_dims[1],
-        "inf_skip": args.inference_skip,
-        "fullscreen": args.fullscreen,
-    }
+    try:
+        inp_src_info = get_inp_src_info(1, None, None, args.input, args.input_codec)
+        if not inp_src_info:
+            sys.exit(1)
+        model = get_inf_model(args.model)
+        model_inp_dims = get_model_input_dims(model)
+        if not model_inp_dims:
+            sys.exit(1)
+        gst_params: dict[str, Any] = {
+            "inp_type": 1,
+            "inp_src": inp_src_info[0],
+            "inp_codec": inp_src_info[1],
+            "codec_elems": inp_src_info[2],
+            "inf_model": model,
+            "inf_w": model_inp_dims[0],
+            "inf_h": model_inp_dims[1],
+            "inf_skip": args.inference_skip,
+            "fullscreen": args.fullscreen,
+        }
+    except KeyboardInterrupt:
+        print("\nExiting...")
+        sys.exit()
 
     gen: GstPipelineGenerator = GstPipelineGenerator(gst_params)
 
