@@ -126,17 +126,12 @@ class GstPipelineGenerator:
         self._fullscreen: bool = gst_params["fullscreen"]
         self._pipeline: GstPipeline = GstPipeline()
 
-    @property
-    def pipeline(self) -> GstPipeline:
-        return self._pipeline
-
-    def _infer_and_display_elements(self) -> list[str, list[str]]:
-        """
-        Gstreamer elements for inference and output display
-        """
-        return [
+        # GStreamer elements
+        self._splitter_elems: list[str, list[str]] = [
             "videoconvert",
             ["tee", "name=t_data"],
+        ]
+        self._infer_elems: list[str, list[str]] = [
             "t_data.",
             "queue",
             "videoconvert",
@@ -150,6 +145,8 @@ class GstPipelineGenerator:
                 "name=infer",
             ],
             "overlay.inference_sink",
+        ]
+        self._overlay_elems: list[str, list[str]] = [
             "t_data.",
             "queue",
             [
@@ -157,9 +154,15 @@ class GstPipelineGenerator:
                 "name=overlay",
                 "label=/usr/share/synap/models/object_detection/coco/info.json",
             ],
+        ]
+        self._display_elems: list[str, list[str]] = [
             "videoconvert",
             ["waylandsink", f"fullscreen={str(self._fullscreen).lower()}"],
         ]
+
+    @property
+    def pipeline(self) -> GstPipeline:
+        return self._pipeline
 
     def make_file_pipeline(self, video_file: str, codec_elems: tuple[str, str]) -> None:
         self._pipeline.reset()
@@ -172,7 +175,10 @@ class GstPipelineGenerator:
             ["qtdemux", "name=demux", "demux.video_0"],
             "queue",
             *codec_elems,
-            *self._infer_and_display_elements(),
+            *self._splitter_elems,
+            *self._infer_elems,
+            *self._overlay_elems,
+            *self._display_elems,
         )
 
     def make_cam_pipeline(self, cam_device: str) -> None:
@@ -184,7 +190,10 @@ class GstPipelineGenerator:
         self._pipeline.add_elements(
             ["v4l2src", f"device={cam_device}"],
             f"video/x-raw,framerate=30/1,format=YUY2,width={self._inp_w},height={self._inp_h}",
-            *self._infer_and_display_elements(),
+            *self._splitter_elems,
+            *self._infer_elems,
+            *self._overlay_elems,
+            *self._display_elems,
         )
 
     def make_rtsp_pipeline(
@@ -205,7 +214,10 @@ class GstPipelineGenerator:
             ["rtph264depay", "wait-for-keyframe=true"],
             f"video/x-{inp_codec},width={self._inp_w},height={self._inp_h}",
             *codec_elems,
-            *self._infer_and_display_elements(),
+            *self._splitter_elems,
+            *self._infer_elems,
+            *self._overlay_elems,
+            *self._display_elems,
         )
 
     def make_pipeline(self) -> None:
