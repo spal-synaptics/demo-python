@@ -6,6 +6,9 @@ META_FILE = "0/model.json"
 
 
 def get_model_input_dims(model: str) -> Optional[tuple[int, int]]:
+    """
+    Attempts to find model input dimensions by parsing .synap file.
+    """
     try:
         with zipfile.ZipFile(model, "r") as mod_info:
             if META_FILE not in mod_info.namelist():

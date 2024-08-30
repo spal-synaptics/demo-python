@@ -4,6 +4,10 @@ import subprocess
 
 
 def get_env() -> dict[str, str]:
+    """
+    Returns an environment with specific exports required to run GStreamer pipelines in a Wayland environment.
+    """
+
     env = environ.copy()
     env["XDG_RUNTIME_DIR"] = "/var/run/user/0"
     env["WESTON_DISABLE_GBM_MODIFIERS"] = "true"
@@ -13,12 +17,17 @@ def get_env() -> dict[str, str]:
 
 
 class GstPipeline:
+    """Abstraction of a GStreamer pipeline"""
 
     def __init__(self) -> None:
         self._elems: list[str, list[str]] = []
         self._pipeline: list[str] = []
 
     def __repr__(self) -> str:
+        """
+        Returns a string representation of the current pipeline.
+        This string is a valid pipeline and can be run with `gst-launch-1.0`.
+        """
         self._format_pipeline()
         pipeline_str = ""
         for elem in self._pipeline:
@@ -28,6 +37,9 @@ class GstPipeline:
         return pipeline_str
 
     def _format_pipeline(self) -> None:
+        """
+        Updates pipeline by adding link operators between elements.
+        """
         self._pipeline.clear()
         self._pipeline.extend(self._elems[0])
         for elem in self._elems[1:]:
@@ -50,6 +62,17 @@ class GstPipeline:
         run_prompt: str = "Running pipeline...",
         print_err: bool = True,
     ) -> bool:
+        """
+        Attempts to run current pipeline with `gst-launch-1.0` through a subprocess.
+
+        An erroneous pipeline will cause the subprocess to terminate with an exit message.
+
+        Pipeline can be shutdown with a SIGINT (KeyboardInterrupt) in which case a graceful exit is attempted.
+        The pipeline is forcefully shut down if the exit fails.
+
+        Returns:
+            bool: True if pipeline executed successfully, False if there was an error.
+        """
         self._format_pipeline()
         process = None
         try:
@@ -84,6 +107,7 @@ class GstPipeline:
 
 
 class GstPipelineGenerator:
+    """Generates a `GstPipeline` for different input sources"""
 
     def __init__(
         self,
@@ -106,7 +130,10 @@ class GstPipelineGenerator:
     def pipeline(self) -> GstPipeline:
         return self._pipeline
 
-    def _infer_elements(self) -> list[str, list[str]]:
+    def _infer_and_display_elements(self) -> list[str, list[str]]:
+        """
+        Gstreamer elements for inference and output display
+        """
         return [
             "videoconvert",
             ["tee", "name=t_data"],
@@ -145,7 +172,7 @@ class GstPipelineGenerator:
             ["qtdemux", "name=demux", "demux.video_0"],
             "queue",
             *codec_elems,
-            *self._infer_elements(),
+            *self._infer_and_display_elements(),
         )
 
     def make_cam_pipeline(self, cam_device: str) -> None:
@@ -157,7 +184,7 @@ class GstPipelineGenerator:
         self._pipeline.add_elements(
             ["v4l2src", f"device={cam_device}"],
             f"video/x-raw,framerate=30/1,format=YUY2,width={self._inp_w},height={self._inp_h}",
-            *self._infer_elements(),
+            *self._infer_and_display_elements(),
         )
 
     def make_rtsp_pipeline(
@@ -178,10 +205,14 @@ class GstPipelineGenerator:
             ["rtph264depay", "wait-for-keyframe=true"],
             f"video/x-{inp_codec},width={self._inp_w},height={self._inp_h}",
             *codec_elems,
-            *self._infer_elements(),
+            *self._infer_and_display_elements(),
         )
 
     def make_pipeline(self) -> None:
+        """
+        Automatically creates correct pipeline based on input type.
+        """
+
         try:
             if self._inp_type == 1:
                 self.make_file_pipeline(self._inp_src, self._codec_elems)
@@ -196,4 +227,4 @@ class GstPipelineGenerator:
             else:
                 raise SystemExit("Fatal: invalid code - shouldn't reach here")
         except KeyError as e:
-            raise SystemError(f'Fatal: missing pipeline paramemeter "{e.args[0]}"')
+            raise SystemExit(f'Fatal: missing pipeline paramemeter "{e.args[0]}"')

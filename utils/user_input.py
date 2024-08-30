@@ -13,7 +13,7 @@ __all__ = [
     "get_inp_type",
     "get_inp_src_info",
     "get_inf_model",
-    "validate_inp_dims"
+    "validate_inp_dims",
 ]
 
 CODECS: dict[str, tuple[str, str]] = {
@@ -24,6 +24,11 @@ CODECS: dict[str, tuple[str, str]] = {
 
 
 def get_dims(prompt: str, inp_dims: Optional[str]) -> tuple[int, int]:
+    """
+    Gets width and height from a widthxheight formatted string.
+
+    Prompts user for dimensions string input if `inp_dims` is None.
+    """
     while True:
         try:
             if not inp_dims:
@@ -39,6 +44,9 @@ def get_dims(prompt: str, inp_dims: Optional[str]) -> tuple[int, int]:
 
 
 def get_bool_prop(prompt: str) -> bool:
+    """
+    Gets a boolean (Y/n) property from user input.
+    """
     while True:
         try:
             val = input(f"{prompt} (Y/n): ").lower()
@@ -50,6 +58,11 @@ def get_bool_prop(prompt: str) -> bool:
 
 
 def get_int_prop(prompt: str, prop_val: Optional[int], default: int) -> int:
+    """
+    Gets a positive integer property.
+
+    Prompts user for integer input if `prop_val` is None.
+    """
     while True:
         try:
             if prop_val is None:
@@ -80,6 +93,11 @@ def get_inp_src_info(
     inp_src: Optional[str],
     inp_codec: Optional[str],
 ) -> Optional[tuple[str, str, tuple[str, str]]]:
+    """
+    Gets codec details from a provided input source.
+
+    Prompts user for missing information and also validates the input source.
+    """
     gst_val: GstInputValidator = GstInputValidator(inp_type)
     codec_elems: Optional[tuple[str, str]] = None
     try:
@@ -135,6 +153,11 @@ def get_inp_src_info(
 
 
 def get_inf_model(model: Optional[str]) -> str:
+    """
+    Gets a valid model by verifying model with synap_cli.
+
+    Prompts user for model file if `model` is None.
+    """
     while True:
         try:
             if not model:
@@ -160,12 +183,17 @@ def get_inf_model(model: Optional[str]) -> str:
 
 
 def validate_inp_dims(dims: str) -> str:
+    """
+    Helper function to validate input dimensions from a command line arg.
+    """
     try:
-        width, height = dims.split('x')
+        width, height = dims.split("x")
         width: int = int(width)
         height: int = int(height)
         if width <= 0 or height <= 0:
             raise ArgumentTypeError("Both width and height must be positive integers.")
         return f"{width}x{height}"
     except ValueError:
-        raise ArgumentTypeError("Input size must be WIDTHxHEIGHT, where both are integers.")
+        raise ArgumentTypeError(
+            "Input size must be WIDTHxHEIGHT, where both are integers."
+        )

@@ -4,6 +4,7 @@ from gst.pipeline import GstPipeline
 
 
 class GstInputValidator:
+    """Validates input sources by directing output to a fakesink"""
 
     def __init__(self, inp_type: int, num_buffers: int = 10, verbose: int = 1) -> None:
         self._inp_type = inp_type
@@ -21,6 +22,17 @@ class GstInputValidator:
         inp_codec: Optional[str] = None,
         codec_elems: Optional[tuple[str, str]] = None,
     ) -> bool:
+        """
+        Validates an input source.
+
+        Args:
+            inp_src (str): the input source (video file / camera device / RTSP stream URL)
+            msg_on_error (str): message to display if the validation fails
+            inp_w (int): [Optional] width of input source (for camera and RTSP)
+            inp_h (int): [Optional] height of input source (for camera and RTSP)
+            inp_codec (str): [Optional] codec used in compression (for video and RTSP)
+            codec_elems (str): [Optional] Gstreamer elements for codec (for video and RTSP)
+        """
         self._val_pipeline.reset()
         if self._inp_type == 1:
             self._val_pipeline.add_elements(
