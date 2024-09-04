@@ -9,6 +9,7 @@ from utils.camera import find_valid_camera_devices
 __all__ = [
     "get_dims",
     "get_bool_prop",
+    "get_float_prop",
     "get_int_prop",
     "get_inp_type",
     "get_inp_src_info",
@@ -55,6 +56,25 @@ def get_bool_prop(prompt: str) -> bool:
             return val == "y"
         except (TypeError, ValueError):
             print(f"\nInvalid input\n")
+
+
+def get_float_prop(prompt: str, prop_val: Optional[float], default: float, prop_min: float, prop_max: float) -> float:
+    """
+    Gets a float property in the range of `prop_range`.
+
+    Prompts user for float input if `prop_val` is None.
+    """
+    while True:
+        try:
+            if prop_val is None:
+                prop_val = float(input(f"{prompt} (default: {default}): ") or default)
+            if prop_min <= prop_val <= prop_max:
+                return prop_val
+            print(f"\nValue must be >= {prop_min} and <= {prop_max}\n")
+            prop_val = None
+        except (TypeError, ValueError):
+            print(f"\nInvalid input\n")
+            prop_val = None
 
 
 def get_int_prop(prompt: str, prop_val: Optional[int], default: int) -> int:

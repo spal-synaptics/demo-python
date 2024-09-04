@@ -49,6 +49,17 @@ def main(args: argparse.Namespace) -> None:
             args.inference_skip if args.model else None,
             1,
         )
+        gst_params["inf_max"] = get_int_prop(
+            "Maximum number of detections returned per frame",
+            args.num_inferences if args.model else None,
+            5,
+        )
+        gst_params["inf_thresh"] = get_float_prop(
+            "Confidence threshold for inferences",
+            args.confidence_threshold if args.model else None,
+            0.5,
+            0.0, 1.0,
+        )
         gst_params["fullscreen"] = (
             args.fullscreen
             if args.fullscreen is not None
@@ -115,6 +126,21 @@ if __name__ == "__main__":
         metavar="N_FRAMES",
         default=1,
         help="How many frames to skip between each inference (default: %(default)s)",
+    )
+    inf_group.add_argument(
+        "-n",
+        "--num_inferences",
+        type=int,
+        metavar="N",
+        default=5,
+        help="Maximum number of detections returned per frame (default: %(default)s)"
+    )
+    inf_group.add_argument(
+        "--confidence_threshold",
+        type=float,
+        default=0.5,
+        metavar="SCORE",
+        help="Confidence threshold for inferences (default: %(default)s)"
     )
     args = parser.parse_args()
 
