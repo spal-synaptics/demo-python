@@ -42,6 +42,8 @@ if __name__ == "__main__":
             for f in Path(".").rglob("*"):
                 if str(f.resolve()) == __file__:
                     continue
+                if f.resolve() == cwd / "demo.py":
+                    continue
                 if cwd / f.parent == cwd / "examples":
                     continue
                 if f.suffix == ".py":
