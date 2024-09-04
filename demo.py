@@ -17,15 +17,11 @@ def main(args: argparse.Namespace) -> None:
     gst_params: dict[str, Any] = {}
 
     try:
-        gst_params["inp_type"] = get_inp_type(args.input_type)
-        if gst_params["inp_type"] != 1:
-            gst_params["inp_w"], gst_params["inp_h"] = get_dims(
-                "Input dimensions", args.input_dims
-            )
+        if args.input_dims:
+            gst_params["inp_w"], gst_params["inp_h"] = [int(d) for d in args.input_dims.split("x")]
 
         if not (
             inp_src_info := get_inp_src_info(
-                gst_params["inp_type"],
                 gst_params.get("inp_w", None),
                 gst_params.get("inp_h", None),
                 args.input,
@@ -33,7 +29,7 @@ def main(args: argparse.Namespace) -> None:
             )
         ):
             sys.exit(1)
-        gst_params["inp_src"], gst_params["inp_codec"], gst_params["codec_elems"] = (
+        gst_params["inp_type"], gst_params["inp_src"], gst_params["inp_codec"], gst_params["codec_elems"] = (
             inp_src_info
         )
 
@@ -88,16 +84,9 @@ if __name__ == "__main__":
         help="Input source (file / camera / RTSP)",
     )
     parser.add_argument(
-        "-t",
-        "--input_type",
-        type=str,
-        metavar="TYPE",
-        help="Input type ([1] File, [2] Camera, [3] RTSP)",
-    )
-    parser.add_argument(
         "-d",
         "--input_dims",
-        type=str,
+        type=validate_inp_dims,
         metavar="WIDTHxHEIGHT",
         help="Input size (widthxheight)",
     )
@@ -117,7 +106,7 @@ if __name__ == "__main__":
 
     inf_group = parser.add_argument_group("Inference parameters")
     inf_group.add_argument(
-        "--model", type=str, metavar="FILE", help="SyNAP model file location"
+        "-m", "--model", type=str, metavar="FILE", help="SyNAP model file location"
     )
     inf_group.add_argument(
         "-s",
@@ -131,15 +120,16 @@ if __name__ == "__main__":
         "-n",
         "--num_inferences",
         type=int,
-        metavar="N",
+        metavar="N_RESULTS",
         default=5,
         help="Maximum number of detections returned per frame (default: %(default)s)"
     )
     inf_group.add_argument(
+        "-t",
         "--confidence_threshold",
         type=float,
-        default=0.5,
         metavar="SCORE",
+        default=0.5,
         help="Confidence threshold for inferences (default: %(default)s)"
     )
     args = parser.parse_args()

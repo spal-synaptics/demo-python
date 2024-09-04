@@ -2,7 +2,7 @@ from typing import Optional
 import json
 import zipfile
 
-META_FILE = "0/model.json"
+from utils.common import INF_META_FILE
 
 
 def get_model_input_dims(model: str) -> Optional[tuple[int, int]]:
@@ -11,9 +11,9 @@ def get_model_input_dims(model: str) -> Optional[tuple[int, int]]:
     """
     try:
         with zipfile.ZipFile(model, "r") as mod_info:
-            if META_FILE not in mod_info.namelist():
+            if INF_META_FILE not in mod_info.namelist():
                 raise FileNotFoundError("Missing model metadata")
-            with mod_info.open(META_FILE, "r") as meta_f:
+            with mod_info.open(INF_META_FILE, "r") as meta_f:
                 metadata = json.load(meta_f)
                 inputs = metadata["Inputs"]
                 if len(inputs) > 1:

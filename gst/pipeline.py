@@ -2,6 +2,8 @@ from os import environ
 from typing import Any
 import subprocess
 
+from utils.common import InputType, CAM_DEFAULT_WIDTH, CAM_DEFAULT_HEIGHT
+
 
 def get_env() -> dict[str, str]:
     """
@@ -113,7 +115,7 @@ class GstPipelineGenerator:
         self,
         gst_params: dict[str, Any],
     ) -> None:
-        self._inp_type: int = gst_params["inp_type"]
+        self._inp_type: InputType = gst_params["inp_type"]
         self._inp_w: int = gst_params.get("inp_w", None)
         self._inp_h: int = gst_params.get("inp_h", None)
         self._inp_src: str = gst_params["inp_src"]
@@ -187,13 +189,9 @@ class GstPipelineGenerator:
 
     def make_cam_pipeline(self, cam_device: str) -> None:
         self._pipeline.reset()
-        if not self._inp_w or not self._inp_h:
-            raise SystemExit(
-                "Fatal: input width or height not provided to pipeline generator"
-            )
         self._pipeline.add_elements(
             ["v4l2src", f"device={cam_device}"],
-            f"video/x-raw,framerate=30/1,format=YUY2,width={self._inp_w},height={self._inp_h}",
+            f"video/x-raw,framerate=30/1,format=YUY2,width={self._inp_w or CAM_DEFAULT_WIDTH},height={self._inp_h or CAM_DEFAULT_HEIGHT}",
             *self._splitter_elems,
             *self._infer_elems,
             *self._overlay_elems,
@@ -204,10 +202,6 @@ class GstPipelineGenerator:
         self, rtsp_url: str, inp_codec: str, codec_elems: tuple[str, str]
     ) -> None:
         self._pipeline.reset()
-        if not self._inp_w or not self._inp_h:
-            raise SystemExit(
-                "Fatal: input width or height not provided to pipeline generator"
-            )
         if not inp_codec or not codec_elems:
             raise SystemExit(
                 "Fatal: codec information not provided to pipeline generator"
@@ -216,7 +210,7 @@ class GstPipelineGenerator:
             ["rtspsrc", f'location="{rtsp_url}"', "latency=2000"],
             "rtpjitterbuffer",
             ["rtph264depay", "wait-for-keyframe=true"],
-            f"video/x-{inp_codec},width={self._inp_w},height={self._inp_h}",
+            f"video/x-{inp_codec},width={self._inp_w},height={self._inp_h}" if (self._inp_w and self._inp_h) else f"video/x-{inp_codec}",
             *codec_elems,
             *self._splitter_elems,
             *self._infer_elems,
@@ -230,17 +224,17 @@ class GstPipelineGenerator:
         """
 
         try:
-            if self._inp_type == 1:
+            if self._inp_type == InputType.FILE:
                 self.make_file_pipeline(self._inp_src, self._codec_elems)
-            elif self._inp_type == 2:
+            elif self._inp_type == InputType.CAMERA:
                 self.make_cam_pipeline(self._inp_src)
-            elif self._inp_type == 3:
+            elif self._inp_type == InputType.RTSP:
                 self.make_rtsp_pipeline(
                     self._inp_src,
                     self._inp_codec,
                     self._codec_elems,
                 )
             else:
-                raise SystemExit("Fatal: invalid code - shouldn't reach here")
+                raise SystemExit(f"Fatal: invalid input type {self._inp_type}")
         except KeyError as e:
             raise SystemExit(f'Fatal: missing pipeline paramemeter "{e.args[0]}"')

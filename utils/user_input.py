@@ -4,6 +4,7 @@ import subprocess
 
 from gst.validator import GstInputValidator
 from utils.camera import find_valid_camera_devices
+from utils.common import InputType, CAM_DEV_PREFIX, CAM_DEFAULT_WIDTH, CAM_DEFAULT_HEIGHT
 
 
 __all__ = [
@@ -96,62 +97,57 @@ def get_int_prop(prompt: str, prop_val: Optional[int], default: int) -> int:
             prop_val = None
 
 
-def get_inp_type(inp_type: Optional[str]) -> int:
-    while (
-        inp_type := inp_type
-        or input("Input type:\n[1] File\n[2] Camera\n[3] RTSP\nChoose type: ")
-    ) not in ("1", "2", "3"):
-        print("\nInvalid choice.\n")
-        inp_type = None
-    return int(inp_type)
+def get_inp_type(inp_src: str) -> InputType:
+    if inp_src.startswith(CAM_DEV_PREFIX) or inp_src.lower() == "auto":
+        return InputType.CAMERA
+    elif inp_src.startswith("rtsp://"):
+        return InputType.RTSP
+    open(inp_src, "rb").close()
+    return InputType.FILE
 
 
 def get_inp_src_info(
-    inp_type: int,
     inp_w: Optional[int],
     inp_h: Optional[int],
     inp_src: Optional[str],
     inp_codec: Optional[str],
-) -> Optional[tuple[str, str, tuple[str, str]]]:
+) -> Optional[tuple[int, str, str, tuple[str, str]]]:
     """
     Gets codec details from a provided input source.
 
     Prompts user for missing information and also validates the input source.
     """
+    inp_src: str = inp_src or input("Input source: ")
+    try:
+        inp_type: InputType = get_inp_type(inp_src)
+    except FileNotFoundError:
+        print(f"\nERROR: Invalid input source \"{inp_src}\"\n")
+        return None
     gst_val: GstInputValidator = GstInputValidator(inp_type)
     codec_elems: Optional[tuple[str, str]] = None
     try:
-        if inp_type == 1:
-            inp_src: str = inp_src or input("Video file path: ")
+        if inp_type == InputType.CAMERA:
+            inp_codec = None
+            if inp_src.lower() == "auto":
+                print("Finding valid camera device...")
+                valid_devs = find_valid_camera_devices(inp_w or CAM_DEFAULT_WIDTH, inp_h or CAM_DEFAULT_HEIGHT)
+                if not valid_devs:
+                    print("\nNo camera connected to board\n")
+                    return None
+                inp_src = valid_devs[0]
+                print(f"Found {inp_src}")
+                return inp_type, inp_src, inp_codec, codec_elems
+            msg_on_error: str = (
+                f'ERROR: Invalid camera "{inp_src}", use `v4l2-ctl --list-devices` to verify device'
+            )
+        elif inp_type == InputType.FILE or inp_type == InputType.RTSP:
             inp_codec = inp_codec or (
                 input("[Optional] Codec [av1 / h264 (default) / h265]: ") or "h264"
             )
             codec_elems = CODECS[inp_codec]
             msg_on_error: str = (
                 f'ERROR: Invalid input video file "{inp_src}", check source and codec'
-            )
-        elif inp_type == 2 and inp_w and inp_h:
-            inp_codec = None
-            inp_src: str = inp_src or input("Camera device (default: AUTO): ") or "AUTO"
-            if inp_src == "AUTO":
-                print("Finding valid camera device...")
-                valid_devs = find_valid_camera_devices(inp_w=inp_w, inp_h=inp_h)
-                if not valid_devs:
-                    print("\nNo camera connected to board\n")
-                    return None
-                inp_src = valid_devs[0]
-                print(f"Found {inp_src}")
-                return inp_src, inp_codec, codec_elems
-            msg_on_error: str = (
-                f'ERROR: Invalid camera "{inp_src}", use `v4l2-ctl --list-devices` to verify device'
-            )
-        elif inp_type == 3 and inp_w and inp_h:
-            inp_src: str = inp_src or input("RTSP stream URL: ")
-            inp_codec = inp_codec or (
-                input("[Optional] Codec [av1 / h264 (default) / h265]: ") or "h264"
-            )
-            codec_elems = CODECS[inp_codec]
-            msg_on_error: str = (
+            ) if inp_type == InputType.FILE else (
                 f'ERROR: Invalid RTSP stream "{inp_src}", check URL and codec'
             )
         else:
@@ -165,7 +161,7 @@ def get_inp_src_info(
             inp_codec=inp_codec,
             codec_elems=codec_elems,
         ):
-            return inp_src, inp_codec, codec_elems
+            return inp_type, inp_src, inp_codec, codec_elems
     except KeyError:
         print(
             f'\nERROR: Invalid codec "{inp_codec}", choose from [av1 / h264 / h265]\n'
@@ -202,11 +198,13 @@ def get_inf_model(model: Optional[str]) -> str:
             model = None
 
 
-def validate_inp_dims(dims: str) -> str:
+def validate_inp_dims(dims: Optional[str]) -> str:
     """
     Helper function to validate input dimensions from a command line arg.
     """
     try:
+        if dims is None:
+            return ""
         width, height = dims.split("x")
         width: int = int(width)
         height: int = int(height)
