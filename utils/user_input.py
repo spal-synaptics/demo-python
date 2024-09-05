@@ -20,8 +20,8 @@ __all__ = [
 
 CODECS: dict[str, tuple[str, str]] = {
     "av1": ("av1parse", "v4l2av1dec"),
-    "h264": ("h264parse", "v4l2h264dec"),
-    "h265": ("h265parse", "v4l2h265dec"),
+    "h264": ("h264parse", "avdec_h264"),
+    "h265": ("h265parse", "avdec_h265"),
 }
 
 
