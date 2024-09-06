@@ -39,9 +39,7 @@ Alternatively, you can run with input arguments:
 ```
 python3 demo-python.py \
 -i <input source> \
--t <input type> \
--d <input dimensions> \
---model <inference model>
+-m <inference model>
 ```
 Use `python3 demo.py --help` to get a list of available input arguments. The script will ask for any necessary information that is not provided via the input arguments.
 
